@@ -67,7 +67,7 @@ defined in linker script */
  *          starts execution following a reset event. Only the absolutely
  *          necessary set is performed, after which the application
  *          supplied main() routine is called. 
- * @param  None
+ * @param  None`
  * @retval : None
 */
 

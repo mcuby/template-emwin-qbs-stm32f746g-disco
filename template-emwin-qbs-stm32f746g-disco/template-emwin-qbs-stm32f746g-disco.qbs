@@ -61,18 +61,16 @@ CppApplication {
     property string Components: Home + "/Drivers/BSP/Components"
     property string Modules: Home + "/Modules"
     property string lwip: Home + "/Middlewares/Third_Party/LwIP"
+    property string DSP: Home + "/Drivers/CMSIS/DSP_Lib/Source"
 
     Group {
         //Имя группы
-        name: "Template"
+        name: "DSP"
         //Список файлов в данном проекте.
         files: [
+            DSP + "/FastMathFunctions/*",
+            DSP + "/TransformFunctions/*",
         ]
-        //Каталоги с включенными файлами
-        cpp.includePaths: [
-        ]
-        //Пути до библиотек
-        cpp.libraryPaths: []
     }
 
     Group {
@@ -113,15 +111,6 @@ CppApplication {
             Modules + "/audio_player/Addons/SpiritDSP_Equalizer/*.a",
             Modules + "/audio_player/Addons/SpiritDSP_Equalizer/*.h",
             Modules + "/audio_player/Addons/SpiritDSP_Mixer/*.h",
-        ]
-        cpp.libraryPaths: [
-             STemWin + "/STemWin_Addons",
-             Home + "/Middlewares/ST/STemWin/Lib",
-        ]
-
-        cpp.staticLibraries: [
-            ":STM32746G_Discovery_STemWin_Addons_GCC.a",
-            ":STemWin540_CM7_OS_GCC_ot.a",
         ]
     }
 
@@ -191,16 +180,6 @@ CppApplication {
             Home + "/Middlewares/ST/STemWin/OS/GUI_X_OS.c",
             Home + "/Middlewares/ST/STemWin/Lib/STemWin540_CM7_OS_GCC_ot.a",
         ]
-
-        cpp.libraryPaths: [
-             STemWin + "/STemWin_Addons",
-             Home + "/Middlewares/ST/STemWin/Lib",
-        ]
-
-        cpp.staticLibraries: [
-            ":STM32746G_Discovery_STemWin_Addons_GCC.a",
-            ":STemWin540_CM7_OS_GCC_ot.a",
-        ]
     }
 
     Group {
@@ -232,7 +211,7 @@ CppApplication {
 
     Group {
         //Имя группы
-        name: "CMSIS_RTOS"
+        name: "CMSIS-RTOS"
         //Список файлов в данном проекте.
         files: [
             CMSIS_RTOS + "/*.c",
@@ -321,11 +300,12 @@ CppApplication {
 
     Group {
         //Имя группы
-        name: "USB HOST"
+        name: "USB host"
         //Список файлов в данном проекте.
         files: [
             USB_HOST + "/Core/Src/*.c",
             USB_HOST + "/Core/Inc/*.h",
+
             USB_HOST + "/Class/MSC/Src/*.c",
             USB_HOST + "/Class/MSC/Inc/*.h",
         ]
@@ -334,6 +314,8 @@ CppApplication {
             USB_HOST + "/Core/Inc/usbh_conf_template.h",
         ]
     }
+
+
 
     Group {
         //Имя группы
@@ -348,6 +330,7 @@ CppApplication {
     cpp.includePaths: [
         Config,
 
+        CMSIS,
         CMSIS + "/Include",
         CMSIS + "/Device/ST/STM32F7xx/Include",
 
@@ -402,7 +385,8 @@ CppApplication {
         "USE_STM32746G_DISCOVERY",
         "__weak=__attribute__((weak))",
         "__packed=__attribute__((__packed__))",
-
+        "__FPU_PRESENT=1",
+        "ARM_MATH_CM7",
     ]
 
     //    --------------------------------------------------------------------
@@ -492,7 +476,7 @@ CppApplication {
     cpp.commonCompilerFlags: [
         "-mcpu=cortex-m7",
         "-mfloat-abi=hard",
-        "-mfpu=fpv5-d16",
+        "-mfpu=fpv5-sp-d16",
         "-mthumb",
     ]
 
@@ -500,7 +484,7 @@ CppApplication {
     cpp.driverFlags: [
         "-mcpu=cortex-m7",
         "-mfloat-abi=hard",
-        "-mfpu=fpv5-d16",
+        "-mfpu=fpv5-sp-d16",
         "-mthumb",
         "-Xlinker",
         "--gc-sections",
@@ -519,16 +503,30 @@ CppApplication {
     cpp.linkerFlags: [
         "--start-group",
         "-T" + path + "/../STM32F746NGHx_FLASH.ld",
+        "-lm",
+        "-lnosys",
+        "-lgcc",
+        "-lc",
+        "-lstdc++",
     ]
 
     cpp.libraryPaths: [
         Home + "/Middlewares/ST/STemWin/Lib",
         STemWin + "/STemWin_Addons",
+        Home + "/Drivers/CMSIS/Lib/GCC",
     ]
+
+//    arm_cortexM7lfdp_math.lib (Cortex-M7, Little endian, Double Precision Floating Point Unit)
+//    arm_cortexM7bfdp_math.lib (Cortex-M7, Big endian, Double Precision Floating Point Unit)
+//    arm_cortexM7lfsp_math.lib (Cortex-M7, Little endian, Single Precision Floating Point Unit)
+//    arm_cortexM7bfsp_math.lib (Cortex-M7, Big endian and Single Precision Floating Point Unit on)
+//    arm_cortexM7l_math.lib (Cortex-M7, Little endian)
+//    arm_cortexM7b_math.lib (Cortex-M7, Big endian)
 
     cpp.staticLibraries: [
         ":STemWin540_CM7_OS_GCC_ot.a",
         ":STM32746G_Discovery_STemWin_Addons_GCC.a",
+        ":libarm_cortexM7lfdp_math.a",
     ]
 
     Properties {
